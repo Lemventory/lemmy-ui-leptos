@@ -1,11 +1,7 @@
-// #![allow(warnings)]
-
 mod config;
-mod cookie;
 mod errors;
 pub mod host;
 mod layout;
-mod lemmy_client;
 mod lemmy_errors;
 mod ui;
 
@@ -21,7 +17,7 @@ use crate::{
     post::post_activity::PostActivity,
   },
 };
-use lemmy_api_common::site::GetSiteResponse;
+use lemmy_client::lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;

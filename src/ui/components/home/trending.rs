@@ -3,7 +3,7 @@ use crate::{
   // i18n::*,
   lemmy_client::*,
 };
-use lemmy_api_common::{
+use lemmy_client::lemmy_api_common::{
   community::*,
   lemmy_db_schema::{ListingType, SortType},
   lemmy_db_views_actor::structs::CommunityView,
