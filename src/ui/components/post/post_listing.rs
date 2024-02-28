@@ -3,7 +3,7 @@ use crate::{
     Icon,
     IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
   },
-  utils::de_bamboozle::de_bamboozle,
+  utils::derive_query_signal::derive_query_signal,
 };
 use lemmy_client::{
   lemmy_api_common::{

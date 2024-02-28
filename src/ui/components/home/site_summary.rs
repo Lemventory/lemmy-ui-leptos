@@ -2,7 +2,7 @@ use crate::{
   i18n::*,
   queries::site_state_query::use_site_state,
   ui::components::common::counts_badge::CountsBadge,
-  utils::de_bamboozle::de_bamboozle,
+  utils::derive_query_signal::derive_query_signal,
 };
 use leptos::*;
 use leptos_query::QueryResult;
@@ -12,20 +12,23 @@ pub fn SiteSummary() -> impl IntoView {
   let _i18n = use_i18n();
   let QueryResult { data, .. } = use_site_state().use_query(|| ());
 
-  let site_name = de_bamboozle(data, |data| data.site_view.site.name.clone());
-  let site_description = de_bamboozle(data, |data| data.site_view.site.description.clone());
+  let site_name = derive_query_signal(data, |data| data.site_view.site.name.clone());
+  let site_description = derive_query_signal(data, |data| {
+    data.site_view.site.description.clone().unwrap_or_default()
+  });
 
-  let users_active_day = de_bamboozle(data, |data| data.site_view.counts.users_active_day);
-  let users_active_week = de_bamboozle(data, |data| data.site_view.counts.users_active_week);
-  let users_active_month = de_bamboozle(data, |data| data.site_view.counts.users_active_month);
+  let users_active_day = derive_query_signal(data, |data| data.site_view.counts.users_active_day);
+  let users_active_week = derive_query_signal(data, |data| data.site_view.counts.users_active_week);
+  let users_active_month =
+    derive_query_signal(data, |data| data.site_view.counts.users_active_month);
   let users_active_half_year =
-    de_bamboozle(data, |data| data.site_view.counts.users_active_half_year);
-  let users = de_bamboozle(data, |data| data.site_view.counts.users);
-  let communities = de_bamboozle(data, |data| data.site_view.counts.communities);
-  let posts = de_bamboozle(data, |data| data.site_view.counts.posts);
-  let comments = de_bamboozle(data, |data| data.site_view.counts.comments);
+    derive_query_signal(data, |data| data.site_view.counts.users_active_half_year);
+  let users = derive_query_signal(data, |data| data.site_view.counts.users);
+  let communities = derive_query_signal(data, |data| data.site_view.counts.communities);
+  let posts = derive_query_signal(data, |data| data.site_view.counts.posts);
+  let comments = derive_query_signal(data, |data| data.site_view.counts.comments);
 
-  let admins = de_bamboozle(data, |data| {
+  let admins = derive_query_signal(data, |data| {
     data
       .admins
       .iter()
@@ -64,12 +67,7 @@ pub fn SiteSummary() -> impl IntoView {
         <h3 class="card-title">Admins</h3>
         <p>
           <For
-            each=move || {
-                with!(
-                    | admins | admins.as_ref().and_then(| admins | admins.as_ref().ok().cloned())
-                    .unwrap_or_default()
-                )
-            }
+            each=move || { admins.get().unwrap_or_default() }
 
             key=|a| a.0
             children=move |a| {

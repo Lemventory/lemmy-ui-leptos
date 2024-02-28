@@ -5,7 +5,7 @@ use crate::{
     home::{site_summary::SiteSummary, trending::Trending},
     post::post_listings::PostListings,
   },
-  utils::de_bamboozle::de_bamboozle,
+  utils::derive_query_signal::derive_query_signal,
 };
 use lemmy_client::lemmy_api_common::{
   lemmy_db_schema::{ListingType, SortType},
@@ -29,11 +29,13 @@ pub fn HomeActivity() -> impl IntoView {
     ..
   } = use_posts().use_query(Default::default);
 
-  let site_view = Signal::derive(move || data.get());
+  let posts = derive_query_signal(list_posts_response, |list_posts_response| {
+    list_posts_response.posts
+  });
 
   let query = use_query_map();
 
-  let listing_type = de_bamboozle(site_response, |site_response| {
+  let listing_type = derive_query_signal(site_response, |site_response| {
     serde_json::from_str(&with!(|query| query
       .get("listingType")
       .or_else(|| site_response.my_user.map(|my_user| &my_user
@@ -49,7 +51,7 @@ pub fn HomeActivity() -> impl IntoView {
     .unwrap_or(ListingType::Local)
   });
 
-  let sort_type = de_bamboozle(site_response, |site_response| {
+  let sort_type = derive_query_signal(site_response, |site_response| {
     serde_json::from_str(&with!(|query| query
       .get("sort")
       .or_else(|| site_response.my_user.map(|my_user| &my_user
@@ -246,100 +248,73 @@ pub fn HomeActivity() -> impl IntoView {
         <button class="btn join-item btn-disabled">Comments</button>
       </div>
       <div class="join mr-3 hidden sm:inline-block">
-        {move || {
-            let mut query_params = query.get();
-            query_params.insert("list".into(), "\"Subscribed\"".into());
-            view! {
-              <A
-                href=move || query_params.to_query_string()
-                class=move || {
-                    format!(
-                        "btn join-item {}",
-                        if Some(ListingType::Subscribed) == list_func() { "btn-active" } else { "" },
-                    )
-                }
-              >
-
-                "Subscribed"
-              </A>
-            }
-        }}
         <A
-                href=move || with!(|query| query.to_query_string())
-                                         class=move || {
-                                           with!(|query, listing_type| {
-                                             let mut class = String::from("btn join-item");
-
-
-                                           })
-                                         }
-      >
-        Subscribed
-      </A>
-        <A
-          href=move || {
-              let mut query_params = query.get();
-              query_params.insert("list".into(), "\"Local\"".into());
-              query_params.to_query_string()
-          }
-
+          href=move || with!(| query | query.to_query_string())
           class=move || {
-              format!(
-                  "btn join-item {}",
-                  if Some(ListingType::Local) == list_func() { "btn-active" } else { "" },
+              with!(
+                  | query, listing_type | { let mut class = String::from("btn join-item"); if
+                  listing_type.is_some_and(| listing_type | listing_type == ListingType::Subscribed)
+                  { class.push_str(" btn-active") } class }
               )
           }
         >
 
-          "Local"
+          Subscribed
         </A>
         <A
-          href=move || {
-              let mut query_params = query.get();
-              query_params.insert("list".into(), "\"All\"".into());
-              query_params.to_query_string()
-          }
+          href=move || { with!(| query | query.to_query_string()) }
 
           class=move || {
-              format!(
-                  "btn join-item {}",
-                  if Some(ListingType::All) == list_func() { "btn-active" } else { "" },
+              with!(
+                  | query, listing_type | { let mut class = String::from("btn join-item"); if
+                  listing_type.is_some_and(| listing_type | listing_type == ListingType::Local)
+                  { class.push_str(" btn-active") } class }
               )
           }
         >
 
-          "All"
+          Local
+        </A>
+        <A
+          href=move || { with!(| query | query.to_query_string()) }
+
+          class=move || {
+              with!(
+                  | query, listing_type | { let mut class = String::from("btn join-item"); if
+                  listing_type.is_some_and(| listing_type | listing_type == ListingType::All)
+                  { class.push_str(" btn-active") } class }
+              )
+          }
+        >
+
+          All
         </A>
       </div>
       <div class="dropdown hidden sm:inline-block">
         <label tabindex="0" class="btn">
-          "Sort type"
+          Sort type
         </label>
         <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
           <li
             class=move || {
-                (if Some(SortType::Active) == sort_func() { "btn-active" } else { "" }).to_string()
+              with!(|sort_type| if sort_type.as_ref().is_some_and(|sort_type| *sort_type == SortType::Active) { Some("btn-active")} else {None})
             }
-
-            on:click=on_sort_click(SortType::Active)
           >
             <span>{t!(i18n, active)}</span>
           </li>
           <li
             class=move || {
-                (if Some(SortType::Hot) == sort_func() { "btn-active" } else { "" }).to_string()
-            }
 
-            on:click=on_sort_click(SortType::Hot)
+              with!(|sort_type| if sort_type.as_ref().is_some_and(|sort_type| *sort_type == SortType::Hot) { Some("btn-active")} else {None})
+            }
           >
             <span>{t!(i18n, hot)}</span>
           </li>
           <li
             class=move || {
-                (if Some(SortType::New) == sort_func() { "btn-active" } else { "" }).to_string()
-            }
 
-            on:click=on_sort_click(SortType::New)
+              with!(|sort_type| if sort_type.as_ref().is_some_and(|sort_type| *sort_type == SortType::New) { Some("btn-active")} else {None})
+            }
           >
             <span>{t!(i18n, new)}</span>
           </li>
@@ -348,77 +323,82 @@ pub fn HomeActivity() -> impl IntoView {
     </div>
     <main role="main" class="w-full flex flex-col sm:flex-row flex-grow">
       <Transition fallback=|| {}>
-        {move || {
-            ssr_posts
-                .get()
-                .unwrap_or(None)
-                .map(|p| {
-                    if csr_infinite_scroll_posts.get().is_none() {
-                        csr_paginator.set(p.next_page.clone());
-                    }
-                    view! {
-                      <div class="flex flex-col ">
-                        <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
+      <div class="flex flex-col">
+        <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
+          <PostListings posts=move || with!(|posts| posts.as_ref().unwrap_or_default())/>
+        </div>
+      </div>
+        // {move || {
+        //     ssr_posts
+        //         .get()
+        //         .unwrap_or(None)
+        //         .map(|p| {
+        //             if csr_infinite_scroll_posts.get().is_none() {
+        //                 csr_paginator.set(p.next_page.clone());
+        //             }
+        //             view! {
+        //               <div class="flex flex-col ">
+        //                 <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
 
-                          <PostListings posts=p.posts.into()/>
-                          <PostListings posts=csr_infinite_scroll_posts
-                              .get()
-                              .unwrap_or_default()
-                              .into()/>
-                        </div>
-                        <div class=" hidden sm:block">
+        //                   <PostListings posts=p.posts.into()/>
+        //                   <PostListings posts=csr_infinite_scroll_posts
+        //                       .get()
+        //                       .unwrap_or_default()
+        //                       .into()/>
+        //                 </div>
+        //                 <div class=" hidden sm:block">
 
-                          {if let Some(s) = ssr_prev() {
-                              if !s.is_empty() {
-                                  let mut st = s.split(',').collect::<Vec<_>>();
-                                  let p = st.pop().unwrap_or("");
-                                  let mut query_params = query.get();
-                                  query_params.insert("prev".into(), st.join(",").to_string());
-                                  query_params.insert("from".into(), p.into());
-                                  view! {
-                                    <span>
-                                      <A
-                                        href=format!("{}", query_params.to_query_string())
-                                        class="btn"
-                                      >
-                                        "Prev"
-                                      </A>
-                                    </span>
-                                  }
-                              } else {
-                                  view! { <span></span> }
-                              }
-                          } else {
-                              view! { <span></span> }
-                          }}
-                          {if let Some(n) = p.next_page.clone() {
-                              let s = ssr_prev().unwrap_or_default();
-                              let mut st = s.split(',').collect::<Vec<_>>();
-                              let f = if let Some(PaginationCursor(g)) = from_func() {
-                                  g
-                              } else {
-                                  "".to_string()
-                              };
-                              st.push(&f);
-                              let mut query_params = query.get();
-                              query_params.insert("prev".into(), st.join(",").to_string());
-                              query_params.insert("from".into(), n.0);
-                              view! {
-                                <span>
-                                  <A href=format!("{}", query_params.to_query_string()) class="btn">
-                                    "Next"
-                                  </A>
-                                </span>
-                              }
-                          } else {
-                              view! { <span></span> }
-                          }}
+        //                   {if let Some(s) = ssr_prev() {
+        //                       if !s.is_empty() {
+        //                           let mut st = s.split(',').collect::<Vec<_>>();
+        //                           let p = st.pop().unwrap_or("");
+        //                           let mut query_params = query.get();
+        //                           query_params.insert("prev".into(), st.join(",").to_string());
+        //                           query_params.insert("from".into(), p.into());
+        //                           view! {
+        //                             <span>
+        //                               <A
+        //                                 href=format!("{}", query_params.to_query_string())
+        //                                 class="btn"
+        //                               >
+        //                                 "Prev"
+        //                               </A>
+        //                             </span>
+        //                           }
+        //                       } else {
+        //                           view! { <span></span> }
+        //                       }
+        //                   } else {
+        //                       view! { <span></span> }
+        //                   }}
+        //                   {if let Some(n) = p.next_page.clone() {
+        //                       let s = ssr_prev().unwrap_or_default();
+        //                       let mut st = s.split(',').collect::<Vec<_>>();
+        //                       let f = if let Some(PaginationCursor(g)) = from_func() {
+        //                           g
+        //                       } else {
+        //                           "".to_string()
+        //                       };
+        //                       st.push(&f);
+        //                       let mut query_params = query.get();
+        //                       query_params.insert("prev".into(), st.join(",").to_string());
+        //                       query_params.insert("from".into(), n.0);
+        //                       view! {
+        //                         <span>
+        //                           <A href=format!("{}", query_params.to_query_string()) class="btn">
+        //                             "Next"
+        //                           </A>
+        //                         </span>
+        //                       }
+        //                   } else {
+        //                       view! { <span></span> }
+        //                   }}
 
-                        </div>
-                      </div>
-                    }
-                })
-        }}
+        //                 </div>
+        //               </div>
+        //             }
+        //         })
+        // }}
 
       </Transition>
 

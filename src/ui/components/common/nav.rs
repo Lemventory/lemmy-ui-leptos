@@ -5,7 +5,10 @@ use crate::{
     Icon,
     IconType::{Donate, Notifications, Search},
   },
-  utils::{de_bamboozle::de_bamboozle, get_client_and_session::get_client_and_session},
+  utils::{
+    derive_query_signal::derive_query_signal,
+    get_client_and_session::get_client_and_session,
+  },
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
@@ -56,14 +59,14 @@ pub fn TopNav() -> impl IntoView {
 
   let QueryResult { data, refetch, .. } = use_site_state().use_query(|| ());
 
-  let user_name = de_bamboozle(data, |data| {
+  let user_name = derive_query_signal(data, |data| {
     data
       .my_user
       .as_ref()
       .map(|data| data.local_user_view.person.name.clone())
   });
 
-  let display_name = de_bamboozle(data, |data| {
+  let display_name = derive_query_signal(data, |data| {
     data
       .my_user
       .as_ref()
@@ -71,7 +74,7 @@ pub fn TopNav() -> impl IntoView {
       .flatten()
   });
 
-  let instance_name = de_bamboozle(data, |data| data.site_view.site.name.clone());
+  let instance_name = derive_query_signal(data, |data| data.site_view.site.name.clone());
 
   let logout_action = create_server_action::<LogoutAction>();
 
@@ -194,12 +197,7 @@ pub fn TopNav() -> impl IntoView {
             // </details>
             // </li>
             <Show
-              when=move || {
-                  with!(
-                      | user_name | user_name.as_ref().is_some_and(| user_name | user_name.as_ref()
-                      .is_ok_and(Option::is_some))
-                  )
-              }
+              when=move || { with!(| user_name | user_name.as_ref().is_some_and(Option::is_some)) }
 
               fallback=move || {
                   view! {
@@ -225,9 +223,8 @@ pub fn TopNav() -> impl IntoView {
                   <summary>
                     {move || {
                         with!(
-                            | user_name, display_name | { display_name.as_ref() ?.as_ref().ok()
-                            ?.as_ref().or_else(|| user_name.as_ref() ?.as_ref().ok() ?.as_ref())
-                            .map(Clone::clone) }
+                            | user_name, display_name | display_name.as_ref().map(Clone::clone)
+                            .flatten().or_else(|| user_name.as_ref().map(Clone::clone).flatten())
                         )
                     }}
 
@@ -236,10 +233,9 @@ pub fn TopNav() -> impl IntoView {
                     <li>
                       <A href=move || {
                           with!(
-                              | user_name | user_name.as_ref() ?.as_ref().ok() ?.as_ref()
-                              .map(Clone::clone)
+                              | user_name | user_name.as_ref().map(Clone::clone).flatten().map(|
+                              user_name | format!("/u/{}", user_name)).unwrap_or_default()
                           )
-                              .unwrap_or_default()
                       }>{t!(i18n, profile)}</A>
                     </li>
                     <li>
@@ -269,7 +265,7 @@ pub fn BottomNav() -> impl IntoView {
 
   let QueryResult { data, .. } = use_site_state().use_query(|| ());
 
-  let version = de_bamboozle(data, |data| data.version.clone());
+  let version = derive_query_signal(data, |data| data.version.clone());
 
   view! {
     <nav class="container navbar mx-auto hidden sm:flex">
@@ -286,11 +282,11 @@ pub fn BottomNav() -> impl IntoView {
             <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
               {move || {
                   with!(
-                      | version | format!("BE: {}", version.as_ref().map(| version | version
-                      .as_ref().ok()).flatten().map(Clone::clone).unwrap_or_else(||
-                      String::from("Lemmy")))
+                      | version | format!("BE: {}", version.as_ref().map(Clone::clone)
+                      .unwrap_or_else(|| String::from("Lemmy")))
                   )
               }}
+
             </a>
           </li>
           <li>
