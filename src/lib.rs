@@ -2,13 +2,13 @@ mod config;
 mod errors;
 pub mod host;
 mod layout;
-mod lemmy_errors;
 mod queries;
+#[cfg(feature = "ssr")]
+pub mod server;
 mod ui;
 mod utils;
 
 use crate::{
-  errors::LemmyAppError,
   i18n::*,
   layout::Layout,
   ui::components::{
@@ -18,9 +18,9 @@ use crate::{
     post::post_activity::PostActivity,
   },
 };
-use lemmy_client::lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_meta::*;
+use leptos_query::provide_query_client;
 use leptos_router::*;
 
 leptos_i18n::load_locales!();
@@ -29,48 +29,19 @@ leptos_i18n::load_locales!();
 pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
+  provide_query_client();
 
-  let error = create_rw_signal::<Option<LemmyAppError>>(None);
-  provide_context(error);
-  let user = create_rw_signal::<Option<bool>>(None);
-  provide_context(user);
-  let ui_theme = create_rw_signal::<Option<String>>(None);
+  let ui_theme = create_rw_signal::<String>(String::from("retro"));
   provide_context(ui_theme);
 
-  let ssr_site = create_resource(
-    move || (user.get()),
-    move |_user| async move {
-      let result = LemmyClient.get_site().await;
-
-      match result {
-        Ok(o) => Ok(o),
-        Err(e) => {
-          error.set(Some(e.clone()));
-          Err(e)
-        }
-      }
-    },
-  );
-
-  let site_signal = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
-
+  let (is_routing, set_is_routing) = create_signal(false);
   view! {
-    <Transition fallback=|| {}>
-      {move || {
-          ssr_site
-              .get()
-              .map(|m| {
-                  site_signal.set(Some(m));
-              });
-      }}
-
-    </Transition>
-    <Router>
+    <Router set_is_routing=set_is_routing>
       <Routes>
-        <Route path="/" view=move || view! { <Layout site_signal/> } ssr=SsrMode::Async>
+        <Route path="/" view=move || view! { <Layout is_routing=is_routing/> } ssr=SsrMode::Async>
           <Route path="/*any" view=NotFound/>
 
-          <Route path="" view=move || view! { <HomeActivity site_signal/> }/>
+          <Route path="" view=HomeActivity/>
 
           <Route path="create_post" view=CommunitiesActivity/>
           <Route path="post/:id" view=PostActivity/>

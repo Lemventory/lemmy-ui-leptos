@@ -1,71 +1,77 @@
 use crate::{
   i18n::*,
-  queries::site_state_query::{use_site_state, use_site_state_scope},
+  queries::site_state_query::use_site_state,
   ui::components::common::icon::{
     Icon,
     IconType::{Donate, Notifications, Search},
   },
+  utils::{de_bamboozle::de_bamboozle, get_client_and_session::get_client_and_session},
 };
-use lemmy_client::lemmy_api_common::site::GetSiteResponse;
-use leptos::*;
+use lemmy_client::LemmyRequest;
+use leptos::{server_fn::error::NoCustomError, *};
 use leptos_query::QueryResult;
 use leptos_router::*;
-use web_sys::SubmitEvent;
 
 #[server(LogoutAction, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
-  use actix_session::Session;
-  use leptos_actix::extract;
+  let (client, session) = get_client_and_session().await?;
 
-  let session = extract::<Session>().await?;
+  let jwt = session.get::<String>("jwt")?;
+  client
+    .logout(LemmyRequest::from_jwt(jwt))
+    .await
+    .map_err(|e| ServerFnError::<NoCustomError>::ServerError(e.to_string()))?;
 
-  // TODO: Will have to make API call to delete session stored in DB once that feature is implemented on the server
   session.purge();
-
   Ok(())
 }
 
-#[server(ChangeLangFn, "/serverfn")]
-pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
-  let _ = set_cookie(
-    "i18n_pref_locale",
-    &lang.to_lowercase(),
-    &core::time::Duration::from_secs(604800),
-  )
-  .await;
-  Ok(())
-}
+// #[server(ChangeLangFn, "/serverfn")]
+// pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
+//   let _ = set_cookie(
+//     "i18n_pref_locale",
+//     &lang.to_lowercase(),
+//     &core::time::Duration::from_secs(604800),
+//   )
+//   .await;
+//   Ok(())
+// }
 
-#[server(ChangeThemeFn, "/serverfn")]
-pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
-  // use leptos_actix::redirect;
-  let r = set_cookie("theme", &theme, &core::time::Duration::from_secs(604800)).await;
-  match r {
-    Ok(_o) => Ok(()),
-    Err(_e) => {
-      // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
-      Ok(())
-    }
-  }
-}
+// #[server(ChangeThemeFn, "/serverfn")]
+// pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
+//   // use leptos_actix::redirect;
+//   let r = set_cookie("theme", &theme, &core::time::Duration::from_secs(604800)).await;
+//   match r {
+//     Ok(_o) => Ok(()),
+//     Err(_e) => {
+//       // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+//       Ok(())
+//     }
+//   }
+// }
 
 #[component]
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult { data, refetch, .. } = use_site_state_scope().use_query(|| ());
+  let QueryResult { data, refetch, .. } = use_site_state().use_query(|| ());
 
-  let my_user = Signal::derive(move || {
-    data.get().map_or(None, |res| {
-      res.ok()?.my_user.map(|user| user.local_user_view.person)
-    })
-  });
-
-  let instance_name = Signal::derive(move || {
+  let user_name = de_bamboozle(data, |data| {
     data
-      .get()
-      .map_or(None, |res| Some(res.ok()?.site_view.site.name))
+      .my_user
+      .as_ref()
+      .map(|data| data.local_user_view.person.name.clone())
   });
+
+  let display_name = de_bamboozle(data, |data| {
+    data
+      .my_user
+      .as_ref()
+      .map(|data| data.local_user_view.person.display_name.clone())
+      .flatten()
+  });
+
+  let instance_name = de_bamboozle(data, |data| data.site_view.site.name.clone());
 
   let logout_action = create_server_action::<LogoutAction>();
 
@@ -75,30 +81,30 @@ pub fn TopNav() -> impl IntoView {
     }
   });
 
-  let ui_theme = expect_context::<RwSignal<Option<String>>>();
-  let theme_action = create_server_action::<ChangeThemeFn>();
+  // let ui_theme = expect_context::<RwSignal<Option<String>>>();
+  // let theme_action = create_server_action::<ChangeThemeFn>();
 
-  let on_theme_submit = move |theme_name: &'static str| {
-    move |ev: SubmitEvent| {
-      ev.prevent_default();
-      let _res = create_local_resource(
-        move || theme_name.to_string(),
-        move |t| async move {
-          let _ = set_cookie("theme", &t, &core::time::Duration::from_secs(604800)).await;
-        },
-      );
-      ui_theme.set(Some(theme_name.to_string()));
-    }
-  };
+  // let on_theme_submit = move |theme_name: &'static str| {
+  //   move |ev: SubmitEvent| {
+  //     ev.prevent_default();
+  //     let _res = create_local_resource(
+  //       move || theme_name.to_string(),
+  //       move |t| async move {
+  //         let _ = set_cookie("theme", &t, &core::time::Duration::from_secs(604800)).await;
+  //       },
+  //     );
+  //     ui_theme.set(Some(theme_name.to_string()));
+  //   }
+  // };
 
-  let lang_action = create_server_action::<ChangeLangFn>();
+  // let lang_action = create_server_action::<ChangeLangFn>();
 
-  let on_lang_submit = move |lang: Locale| {
-    move |ev: SubmitEvent| {
-      ev.prevent_default();
-      i18n.set_locale(lang);
-    }
-  };
+  // let on_lang_submit = move |lang: Locale| {
+  //   move |ev: SubmitEvent| {
+  //     ev.prevent_default();
+  //     i18n.set_locale(lang);
+  //   }
+  // };
 
   view! {
     <Transition>
@@ -143,52 +149,58 @@ pub fn TopNav() -> impl IntoView {
                 </span>
               </A>
             </li>
-            <li class="z-[1]">
-              <details>
-                <summary>"Lang"</summary>
-                <ul>
-                  <li>
-                    <ActionForm action=lang_action on:submit=on_lang_submit(Locale::fr)>
-                      <input type="hidden" name="lang" value="FR"/>
-                      <button type="submit">"FR"</button>
-                    </ActionForm>
-                  </li>
-                  <li>
-                    <ActionForm action=lang_action on:submit=on_lang_submit(Locale::en)>
-                      <input type="hidden" name="lang" value="EN"/>
-                      <button type="submit">"EN"</button>
-                    </ActionForm>
-                  </li>
-                </ul>
-              </details>
-            </li>
-            <li class="z-[1]">
-              <details>
-                <summary>"Theme"</summary>
-                <ul>
-                  <li>
-                    <ActionForm action=theme_action on:submit=on_theme_submit("dark")>
-                      <input type="hidden" name="theme" value="dark"/>
-                      <button type="submit">"Dark"</button>
-                    </ActionForm>
-                  </li>
-                  <li>
-                    <ActionForm action=theme_action on:submit=on_theme_submit("light")>
-                      <input type="hidden" name="theme" value="light"/>
-                      <button type="submit">"Light"</button>
-                    </ActionForm>
-                  </li>
-                  <li>
-                    <ActionForm action=theme_action on:submit=on_theme_submit("retro")>
-                      <input type="hidden" name="theme" value="retro"/>
-                      <button type="submit">"Retro"</button>
-                    </ActionForm>
-                  </li>
-                </ul>
-              </details>
-            </li>
+            // <li class="z-[1]">
+            // <details>
+            // <summary>"Lang"</summary>
+            // <ul>
+            // <li>
+            // <ActionForm action=lang_action on:submit=on_lang_submit(Locale::fr)>
+            // <input type="hidden" name="lang" value="FR"/>
+            // <button type="submit">"FR"</button>
+            // </ActionForm>
+            // </li>
+            // <li>
+            // <ActionForm action=lang_action on:submit=on_lang_submit(Locale::en)>
+            // <input type="hidden" name="lang" value="EN"/>
+            // <button type="submit">"EN"</button>
+            // </ActionForm>
+            // </li>
+            // </ul>
+            // </details>
+            // </li>
+            // <li class="z-[1]">
+            // <details>
+            // <summary>"Theme"</summary>
+            // <ul>
+            // <li>
+            // <ActionForm action=theme_action on:submit=on_theme_submit("dark")>
+            // <input type="hidden" name="theme" value="dark"/>
+            // <button type="submit">"Dark"</button>
+            // </ActionForm>
+            // </li>
+            // <li>
+            // <ActionForm action=theme_action on:submit=on_theme_submit("light")>
+            // <input type="hidden" name="theme" value="light"/>
+            // <button type="submit">"Light"</button>
+            // </ActionForm>
+            // </li>
+            // <li>
+            // <ActionForm action=theme_action on:submit=on_theme_submit("retro")>
+            // <input type="hidden" name="theme" value="retro"/>
+            // <button type="submit">"Retro"</button>
+            // </ActionForm>
+            // </li>
+            // </ul>
+            // </details>
+            // </li>
             <Show
-              when=move || with!(| my_user | my_user.is_some())
+              when=move || {
+                  with!(
+                      | user_name | user_name.as_ref().is_some_and(| user_name | user_name.as_ref()
+                      .is_ok_and(Option::is_some))
+                  )
+              }
+
               fallback=move || {
                   view! {
                     <li>
@@ -211,17 +223,24 @@ pub fn TopNav() -> impl IntoView {
               <li>
                 <details>
                   <summary>
-                    {with!(
-                        | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
-                        .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
-                    )}
+                    {move || {
+                        with!(
+                            | user_name, display_name | { display_name.as_ref() ?.as_ref().ok()
+                            ?.as_ref().or_else(|| user_name.as_ref() ?.as_ref().ok() ?.as_ref())
+                            .map(Clone::clone) }
+                        )
+                    }}
 
                   </summary>
                   <ul class="z-10">
                     <li>
-                      <A href=with!(
-                          | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
-                      )>{t!(i18n, profile)}</A>
+                      <A href=move || {
+                          with!(
+                              | user_name | user_name.as_ref() ?.as_ref().ok() ?.as_ref()
+                              .map(Clone::clone)
+                          )
+                              .unwrap_or_default()
+                      }>{t!(i18n, profile)}</A>
                     </li>
                     <li>
                       <A href="/settings">{t!(i18n, settings)}</A>
@@ -248,6 +267,10 @@ pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+  let QueryResult { data, .. } = use_site_state().use_query(|| ());
+
+  let version = de_bamboozle(data, |data| data.version.clone());
+
   view! {
     <nav class="container navbar mx-auto hidden sm:flex">
       <div class="navbar-start w-auto"></div>
@@ -261,11 +284,13 @@ pub fn BottomNav() -> impl IntoView {
           </li>
           <li>
             <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
-              "BE: "
               {move || {
-                  if let Some(Ok(m)) = site_signal.get() { m.version } else { "Lemmy".to_string() }
+                  with!(
+                      | version | format!("BE: {}", version.as_ref().map(| version | version
+                      .as_ref().ok()).flatten().map(Clone::clone).unwrap_or_else(||
+                      String::from("Lemmy")))
+                  )
               }}
-
             </a>
           </li>
           <li>

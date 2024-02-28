@@ -1,44 +1,36 @@
 use crate::{
-  i18n::*,
   queries::site_state_query::use_site_state,
   ui::components::common::text_input::{InputType, TextInput},
 };
-use leptos::*;
+use cfg_if::cfg_if;
+use leptos::{server_fn::error::NoCustomError, *};
 use leptos_query::QueryResult;
 use leptos_router::ActionForm;
-use web_sys::SubmitEvent;
 
 #[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
   use actix_session::Session;
   use actix_web::web;
-  use lemmy_client::{
-    lemmy_api_common::person::{Login, LoginResponse},
-    LemmyClient,
-  };
+  use lemmy_client::{lemmy_api_common::person::Login as LoginBody, LemmyClient};
   use leptos_actix::{extract, redirect};
 
   let client = extract::<web::Data<LemmyClient>>().await?;
   let session = extract::<Session>().await?;
 
-  let req = Login {
+  let req = LoginBody {
     username_or_email: username_or_email.into(),
     password: password.into(),
     totp_2fa_token: None,
   };
 
-  let foo = client
+  if let Some(jwt) = client
     .login(req)
     .await
-    .map_err(ServerFnError::WrappedServerError)?;
-  // if let Some(jwt) = client
-  //   .login(req)
-  //   .await
-  //   .map_err(Into::<ServerFnError>::into)?
-  //   .jwt
-  // {
-  //   session.insert("jwt", jwt.into_inner())?;
-  // }
+    .map_err(|e| ServerFnError::<NoCustomError>::ServerError(e.to_string()))?
+    .jwt
+  {
+    session.insert("jwt", jwt.into_inner())?;
+  }
 
   redirect("/");
   Ok(())
@@ -51,7 +43,7 @@ pub fn LoginForm() -> impl IntoView {
 
   let login = Action::<LoginAction, _>::server();
 
-  let QueryResult { refetch, .. } = use_site_state();
+  let QueryResult { refetch, .. } = use_site_state().use_query(|| ());
 
   Effect::new_isomorphic(move |_| {
     if login.version().get() > 0 {
