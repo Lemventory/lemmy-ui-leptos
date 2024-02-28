@@ -88,11 +88,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e01ed3140b2f8d422c68afa1ed2e85d996ea619c988ac834d255db32138655cb"
 dependencies = [
  "quote",
-<<<<<<< HEAD
- "syn 2.0.50",
-=======
  "syn 2.0.51",
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 ]
 
 [[package]]
@@ -149,7 +145,6 @@ dependencies = [
 [[package]]
 name = "actix-session"
 version = "0.9.0"
-<<<<<<< HEAD
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b671404ec72194d8af58c2bdaf51e3c477a0595056bd5010148405870dda8df2"
 dependencies = [
@@ -160,34 +155,6 @@ dependencies = [
  "derive_more",
  "serde",
  "serde_json",
- "tracing",
-]
-
-[[package]]
-name = "actix-tls"
-version = "3.3.0"
-=======
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b671404ec72194d8af58c2bdaf51e3c477a0595056bd5010148405870dda8df2"
-dependencies = [
- "actix-service",
- "actix-utils",
-<<<<<<< HEAD
- "futures-core",
- "http 0.2.11",
- "http 1.0.0",
- "impl-more",
- "pin-project-lite",
- "tokio",
- "tokio-util",
-=======
- "actix-web",
- "anyhow",
- "derive_more",
- "serde",
- "serde_json",
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
  "tracing",
 ]
 
@@ -305,9 +272,9 @@ dependencies = [
 
 [[package]]
 name = "ahash"
-version = "0.8.9"
+version = "0.8.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d713b3834d76b85304d4d525563c1276e2e30dc97cc67bfb4585a4a29fc2c89f"
+checksum = "8b79b82693f705137f8fb9b37871d99e4f9a7df12b917eed79c3d3954830a60b"
 dependencies = [
  "cfg-if",
  "getrandom",
@@ -427,42 +394,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
-<<<<<<< HEAD
-name = "awc"
-version = "3.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68c09cc97310b926f01621faee652f3d1b0962545a3cec6c9ac07def9ea36c2c"
-dependencies = [
- "actix-codec",
- "actix-http",
- "actix-rt",
- "actix-service",
- "actix-tls",
- "actix-utils",
- "base64 0.21.7",
- "bytes",
- "cfg-if",
- "cookie",
- "derive_more",
- "futures-core",
- "futures-util",
- "h2",
- "http 0.2.11",
- "itoa",
- "log",
- "mime",
- "percent-encoding",
- "pin-project-lite",
- "rand",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "tokio",
-]
-
-[[package]]
-=======
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 name = "backtrace"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1537,11 +1468,7 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 [[package]]
 name = "lemmy-client"
 version = "0.19.4-alpha.1"
-<<<<<<< HEAD
-source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#e8267de96f75c14bfc01f8f9f9f2ce6044f57343"
-=======
 source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#f86f249ff57e2f21ee71166de7950dec804d0ca7"
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 dependencies = [
  "cfg-if",
  "gloo-net 0.5.0",
@@ -1583,11 +1510,7 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.19.3"
-<<<<<<< HEAD
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#f56b84615c78a0ca9942e7a82c8d7ce4255ec5cb"
-=======
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#e01ea32928aec99fde18a6bd141a77b0f7f5aeea"
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#328a48c9f5d57588d17f723dfba49e4812291e0a"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1598,10 +1521,7 @@ dependencies = [
  "lemmy_db_views",
  "lemmy_db_views_actor",
  "lemmy_db_views_moderator",
-<<<<<<< HEAD
-=======
  "lemmy_utils",
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
  "regex",
  "serde",
  "serde_with",
@@ -1613,11 +1533,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.19.3"
-<<<<<<< HEAD
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#f56b84615c78a0ca9942e7a82c8d7ce4255ec5cb"
-=======
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#e01ea32928aec99fde18a6bd141a77b0f7f5aeea"
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#328a48c9f5d57588d17f723dfba49e4812291e0a"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1636,11 +1552,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.19.3"
-<<<<<<< HEAD
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#f56b84615c78a0ca9942e7a82c8d7ce4255ec5cb"
-=======
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#e01ea32928aec99fde18a6bd141a77b0f7f5aeea"
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#328a48c9f5d57588d17f723dfba49e4812291e0a"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1650,34 +1562,20 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.19.3"
-<<<<<<< HEAD
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#f56b84615c78a0ca9942e7a82c8d7ce4255ec5cb"
-=======
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#e01ea32928aec99fde18a6bd141a77b0f7f5aeea"
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#328a48c9f5d57588d17f723dfba49e4812291e0a"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
  "serde",
  "serde_with",
-<<<<<<< HEAD
- "strum 0.25.0",
- "strum_macros 0.25.3",
-=======
  "strum",
  "strum_macros",
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 ]
 
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.19.3"
-<<<<<<< HEAD
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#f56b84615c78a0ca9942e7a82c8d7ce4255ec5cb"
-dependencies = [
- "lemmy_db_schema",
-=======
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#e01ea32928aec99fde18a6bd141a77b0f7f5aeea"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#328a48c9f5d57588d17f723dfba49e4812291e0a"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1687,11 +1585,10 @@ dependencies = [
 [[package]]
 name = "lemmy_utils"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#e01ea32928aec99fde18a6bd141a77b0f7f5aeea"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#328a48c9f5d57588d17f723dfba49e4812291e0a"
 dependencies = [
  "cfg-if",
  "rosetta-build",
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
  "serde",
  "strum",
  "strum_macros",
@@ -2690,9 +2587,9 @@ dependencies = [
 
 [[package]]
 name = "serde-wasm-bindgen"
-version = "0.6.4"
+version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c1432112bce8b966497ac46519535189a3250a3812cd27a999678a69756f79f"
+checksum = "8302e169f0eddcc139c70f139d19d6467353af16f9fce27e8c30158036a1e16b"
 dependencies = [
  "js-sys",
  "serde",
@@ -2861,20 +2758,6 @@ dependencies = [
 [[package]]
 name = "sha2"
 version = "0.10.8"
-<<<<<<< HEAD
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "793db75ad2bcafc3ffa7c68b215fee268f537982cd901d132f89c6343f3a3dc8"
-dependencies = [
- "cfg-if",
- "cpufeatures",
- "digest",
-]
-
-[[package]]
-name = "sharded-slab"
-version = "0.1.7"
-=======
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "793db75ad2bcafc3ffa7c68b215fee268f537982cd901d132f89c6343f3a3dc8"
 dependencies = [
@@ -2951,12 +2834,6 @@ dependencies = [
  "rustversion",
  "syn 2.0.51",
 ]
-
-[[package]]
-name = "subtle"
-version = "2.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81cdd64d312baedb58e21336b31bc043b77e01cc99033ce76ef539f78e965ebc"
 
 [[package]]
 name = "subtle"

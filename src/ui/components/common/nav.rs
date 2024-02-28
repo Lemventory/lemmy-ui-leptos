@@ -1,20 +1,12 @@
 use crate::{
   i18n::*,
-<<<<<<< HEAD
-  lemmy_client::*,
-  queries::site_state_query::use_site_state,
-=======
   queries::site_state_query::{use_site_state, use_site_state_scope},
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
   ui::components::common::icon::{
     Icon,
     IconType::{Donate, Notifications, Search},
   },
 };
-<<<<<<< HEAD
 use lemmy_client::lemmy_api_common::site::GetSiteResponse;
-=======
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 use leptos::*;
 use leptos_query::QueryResult;
 use leptos_router::*;
@@ -61,15 +53,9 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-<<<<<<< HEAD
-  let QueryResult { data, refetch, .. } = use_site_state();
-
-  let my_user = Signal::<Option<Person>>::derive(move || {
-=======
   let QueryResult { data, refetch, .. } = use_site_state_scope().use_query(|| ());
 
   let my_user = Signal::derive(move || {
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
     data.get().map_or(None, |res| {
       res.ok()?.my_user.map(|user| user.local_user_view.person)
     })
@@ -78,11 +64,7 @@ pub fn TopNav() -> impl IntoView {
   let instance_name = Signal::derive(move || {
     data
       .get()
-<<<<<<< HEAD
-      .map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name))
-=======
       .map_or(None, |res| Some(res.ok()?.site_view.site.name))
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
   });
 
   let logout_action = create_server_action::<LogoutAction>();

@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-use crate::{
-  errors::LemmyAppError,
-  // i18n::*,
-  lemmy_client::*,
-};
-=======
 use crate::queries::communities_list_query::use_communities_scope;
->>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 use lemmy_client::lemmy_api_common::{
   community::*,
   lemmy_db_schema::{ListingType, SortType},

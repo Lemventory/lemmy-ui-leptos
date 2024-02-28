@@ -192,7 +192,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
         </A>
       </td>
       <td class="w-full">
-        <A href=move || with!(|id| format!("/post/{id}")) class="block">
+        <A href=move || with!(| id | format!("/post/{id}")) class="block">
           <span class="text-lg">{move || post_view.get().post.name}</span>
         </A>
         <span class="block">
