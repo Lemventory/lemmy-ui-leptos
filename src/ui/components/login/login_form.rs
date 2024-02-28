@@ -27,6 +27,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
     totp_2fa_token: None,
   };
 
+<<<<<<< HEAD
   if let Some(jwt) = client
     .login(req)
     .await
@@ -35,6 +36,20 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
   {
     session.insert("jwt", jwt.into_inner())?;
   }
+=======
+  let foo = client
+    .login(req)
+    .await
+    .map_err(ServerFnError::WrappedServerError)?;
+  // if let Some(jwt) = client
+  //   .login(req)
+  //   .await
+  //   .map_err(Into::<ServerFnError>::into)?
+  //   .jwt
+  // {
+  //   session.insert("jwt", jwt.into_inner())?;
+  // }
+>>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 
   redirect("/");
   Ok(())

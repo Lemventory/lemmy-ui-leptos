@@ -3,13 +3,14 @@ mod errors;
 pub mod host;
 mod layout;
 mod lemmy_errors;
+mod queries;
 mod ui;
+mod utils;
 
 use crate::{
   errors::LemmyAppError,
   i18n::*,
   layout::Layout,
-  lemmy_client::*,
   ui::components::{
     communities::communities_activity::CommunitiesActivity,
     home::home_activity::HomeActivity,

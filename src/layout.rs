@@ -1,15 +1,23 @@
+<<<<<<< HEAD
 use crate::{
   cookie::get_cookie,
   errors::LemmyAppError,
   ui::components::common::nav::{BottomNav, TopNav},
 };
 use lemmy_client::lemmy_api_common::site::GetSiteResponse;
+=======
+use crate::ui::components::common::nav::{BottomNav, TopNav};
+>>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
 use leptos::*;
 use leptos_meta::*;
-use leptos_router::Outlet;
+use leptos_router::{Outlet, RoutingProgress};
 
 #[component]
+<<<<<<< HEAD
 pub fn Layout() -> impl IntoView {
+=======
+pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
+>>>>>>> 9c66740 (Add lemmy client and start changes to accomodate it)
   let ui_theme = expect_context::<RwSignal<Option<String>>>();
 
   view! {

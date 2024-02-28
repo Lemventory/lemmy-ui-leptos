@@ -1,43 +1,35 @@
 use crate::{
-  errors::LemmyAppError,
   i18n::*,
-  lemmy_client::*,
+  queries::site_state_query::use_site_state,
   ui::components::{
     home::{site_summary::SiteSummary, trending::Trending},
     post::post_listings::PostListings,
   },
 };
-use lemmy_api_common::{
+use lemmy_client::lemmy_api_common::{
   lemmy_db_schema::{ListingType, SortType},
   lemmy_db_views::structs::{PaginationCursor, PostView},
   post::GetPosts,
-  site::GetSiteResponse,
 };
 use leptos::*;
+use leptos_query::QueryResult;
 use leptos_router::*;
 use web_sys::MouseEvent;
 
 #[component]
-pub fn HomeActivity(
-  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>,
-) -> impl IntoView {
+pub fn HomeActivity() -> impl IntoView {
   let i18n = use_i18n();
+  let QueryResult { data, .. } = use_site_state();
 
-  let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
-  let user = expect_context::<RwSignal<Option<bool>>>();
+  let site_view = Signal::derive(move || data.get());
 
   let query = use_query_map();
 
-  let list_func = move || {
-    serde_json::from_str::<ListingType>(
-      &query
-        .get()
-        .get("list")
-        .cloned()
-        .unwrap_or("\"Local\"".to_string()),
-    )
-    .ok()
-  };
+  let listing_type = Signal::derive(move || {
+    with!(|query| query
+      .get("listingType")
+      .unwrap_or_else(|| &String::from("\"Local\"")))
+  });
 
   let sort_func = move || {
     serde_json::from_str::<SortType>(
@@ -397,7 +389,7 @@ pub fn HomeActivity(
 
       <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 hidden lg:block">
         <Trending/>
-        <SiteSummary site_signal/>
+        <SiteSummary/>
       </div>
     </main>
   }

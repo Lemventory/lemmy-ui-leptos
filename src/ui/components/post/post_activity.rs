@@ -1,8 +1,10 @@
 use crate::{
-  lemmy_client::*,
+  lemmy_client::{
+    lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost},
+    *,
+  },
   ui::components::{comment::comment_nodes::CommentNodes, post::post_listing::PostListing},
 };
-use lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost};
 use leptos::*;
 use leptos_router::use_params_map;
 
