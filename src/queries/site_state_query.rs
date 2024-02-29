@@ -1,17 +1,13 @@
+use crate::utils::get_client_and_session::get_client_and_session;
 use lemmy_client::lemmy_api_common::site::GetSiteResponse;
-use leptos::*;
+use leptos::{server_fn::codec::GetUrl, *};
 use leptos_query::{create_query, QueryOptions, QueryScope, ResourceOption};
 
-#[server(GetSiteResource, "/serverfn", "GetJson")]
+#[server(GetSiteResource, "/serverfn", input = GetUrl)]
 async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
-  use actix_session::Session;
-  use actix_web::web;
-  use lemmy_client::{LemmyClient, LemmyRequest};
-  use leptos_actix::extract;
+  use lemmy_client::LemmyRequest;
 
-  let session = extract::<Session>().await?;
-  let client = extract::<web::Data<LemmyClient>>().await?;
-
+  let (client, session) = get_client_and_session().await?;
   let jwt = session.get::<String>("jwt")?;
 
   // TODO: Update once I figure out how to get the custom error types working

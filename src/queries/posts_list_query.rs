@@ -1,9 +1,9 @@
 use lemmy_client::lemmy_api_common::post::{GetPosts, GetPostsResponse};
-use leptos::{server, ServerFnError};
+use leptos::{server, server_fn::codec::GetUrl, ServerFnError};
 use leptos_query::{create_query, QueryOptions, QueryScope};
 use std::time::Duration;
 
-#[server(prefix = "serverfn")]
+#[server(prefix = "serverfn", input = GetUrl)]
 async fn list_posts(body: GetPosts) -> Result<GetPostsResponse, ServerFnError> {
   use crate::utils::get_client_and_session::get_client_and_session;
   use lemmy_client::LemmyRequest;

@@ -11,10 +11,12 @@ use lemmy_client::lemmy_api_common::{
   lemmy_db_schema::{ListingType, SortType},
   lemmy_db_views::structs::{PaginationCursor, PostView},
   post::GetPosts,
+  site::GetSiteResponse,
 };
 use leptos::*;
 use leptos_query::QueryResult;
 use leptos_router::*;
+use serde::Deserialize;
 use web_sys::MouseEvent;
 
 #[component]
@@ -29,42 +31,72 @@ pub fn HomeActivity() -> impl IntoView {
     ..
   } = use_posts().use_query(Default::default);
 
-  let posts = derive_query_signal(list_posts_response, |list_posts_response| {
-    list_posts_response.posts
+  let posts = Signal::derive(move || {
+    with!(|list_posts_response| list_posts_response
+      .as_ref()
+      .map(|list_posts_response| list_posts_response.as_ref().ok())
+      .flatten()
+      .map(|list_posts_response| list_posts_response.posts.clone())
+      .unwrap_or_default())
   });
 
   let query = use_query_map();
 
-  let listing_type = derive_query_signal(site_response, |site_response| {
-    serde_json::from_str(&with!(|query| query
-      .get("listingType")
-      .or_else(|| site_response.my_user.map(|my_user| &my_user
-        .local_user_view
-        .local_user
-        .default_listing_type
-        .to_string()))
-      .unwrap_or_else(|| &site_response
-        .site_view
-        .local_site
-        .default_post_listing_mode
-        .to_string())))
-    .unwrap_or(ListingType::Local)
+  let listing_type = Signal::derive(move || {
+    with!(|site_response, query| {
+      let site_response = site_response
+        .as_ref()
+        .map(|site_response| site_response.as_ref().ok())
+        .flatten();
+
+      query
+        .get("listingType")
+        .map(|value| serde_json::from_str(value).ok())
+        .flatten()
+        .or_else(|| {
+          site_response
+            .map(|site_response| {
+              site_response
+                .my_user
+                .as_ref()
+                .map(|my_user| my_user.local_user_view.local_user.default_listing_type)
+            })
+            .flatten()
+        })
+        .or_else(|| {
+          site_response
+            .map(|site_response| site_response.site_view.local_site.default_post_listing_type)
+        })
+        .unwrap_or(ListingType::Local)
+    })
   });
 
-  let sort_type = derive_query_signal(site_response, |site_response| {
-    serde_json::from_str(&with!(|query| query
-      .get("sort")
-      .or_else(|| site_response.my_user.map(|my_user| &my_user
-        .local_user_view
-        .local_user
-        .default_sort_type
-        .to_string()))
-      .unwrap_or_else(|| &site_response
-        .site_view
-        .local_site
-        .default_sort_type
-        .to_string())))
-    .unwrap_or(SortType::Active)
+  let sort_type = Signal::derive(move || {
+    with!(|site_response, query| {
+      let site_response = site_response
+        .as_ref()
+        .map(|site_response| site_response.as_ref().ok())
+        .flatten();
+
+      query
+        .get("sort")
+        .map(|value| serde_json::from_str(value).ok())
+        .flatten()
+        .or_else(|| {
+          site_response
+            .map(|site_response| {
+              site_response
+                .my_user
+                .as_ref()
+                .map(|my_user| my_user.local_user_view.local_user.default_sort_type)
+            })
+            .flatten()
+        })
+        .or_else(|| {
+          site_response.map(|site_response| site_response.site_view.local_site.default_sort_type)
+        })
+        .unwrap_or(SortType::Active)
+    })
   });
 
   // let from_func = move || {
@@ -252,9 +284,8 @@ pub fn HomeActivity() -> impl IntoView {
           href=move || with!(| query | query.to_query_string())
           class=move || {
               with!(
-                  | query, listing_type | { let mut class = String::from("btn join-item"); if
-                  listing_type.is_some_and(| listing_type | listing_type == ListingType::Subscribed)
-                  { class.push_str(" btn-active") } class }
+                  | listing_type | { let mut class = String::from("btn join-item"); if *
+                  listing_type == ListingType::Subscribed { class.push_str(" btn-active") } class }
               )
           }
         >
@@ -266,9 +297,8 @@ pub fn HomeActivity() -> impl IntoView {
 
           class=move || {
               with!(
-                  | query, listing_type | { let mut class = String::from("btn join-item"); if
-                  listing_type.is_some_and(| listing_type | listing_type == ListingType::Local)
-                  { class.push_str(" btn-active") } class }
+                  | listing_type | { let mut class = String::from("btn join-item"); if *
+                  listing_type == ListingType::Local { class.push_str(" btn-active") } class }
               )
           }
         >
@@ -280,9 +310,8 @@ pub fn HomeActivity() -> impl IntoView {
 
           class=move || {
               with!(
-                  | query, listing_type | { let mut class = String::from("btn join-item"); if
-                  listing_type.is_some_and(| listing_type | listing_type == ListingType::All)
-                  { class.push_str(" btn-active") } class }
+                  | listing_type | { let mut class = String::from("btn join-item"); if *
+                  listing_type == ListingType::All { class.push_str(" btn-active") } class }
               )
           }
         >
@@ -295,27 +324,28 @@ pub fn HomeActivity() -> impl IntoView {
           Sort type
         </label>
         <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-          <li
-            class=move || {
-              with!(|sort_type| if sort_type.as_ref().is_some_and(|sort_type| *sort_type == SortType::Active) { Some("btn-active")} else {None})
-            }
-          >
+          <li class=move || {
+              with!(
+                  | sort_type | if * sort_type == SortType::Active { Some("btn-active") } else {
+                  None }
+              )
+          }>
+
             <span>{t!(i18n, active)}</span>
           </li>
-          <li
-            class=move || {
+          <li class=move || {
+              with!(
+                  | sort_type | if * sort_type == SortType::Hot { Some("btn-active") } else { None }
+              )
+          }>
 
-              with!(|sort_type| if sort_type.as_ref().is_some_and(|sort_type| *sort_type == SortType::Hot) { Some("btn-active")} else {None})
-            }
-          >
             <span>{t!(i18n, hot)}</span>
           </li>
-          <li
-            class=move || {
-
-              with!(|sort_type| if sort_type.as_ref().is_some_and(|sort_type| *sort_type == SortType::New) { Some("btn-active")} else {None})
-            }
-          >
+          <li class=move || {
+              with!(
+                  | sort_type | if * sort_type == SortType::New { Some("btn-active") } else { None }
+              )
+          }>
             <span>{t!(i18n, new)}</span>
           </li>
         </ul>
@@ -323,82 +353,82 @@ pub fn HomeActivity() -> impl IntoView {
     </div>
     <main role="main" class="w-full flex flex-col sm:flex-row flex-grow">
       <Transition fallback=|| {}>
-      <div class="flex flex-col">
-        <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
-          <PostListings posts=move || with!(|posts| posts.as_ref().unwrap_or_default())/>
+        <div class="flex flex-col">
+          <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
+            <PostListings posts=posts />
+          </div>
         </div>
-      </div>
-        // {move || {
-        //     ssr_posts
-        //         .get()
-        //         .unwrap_or(None)
-        //         .map(|p| {
-        //             if csr_infinite_scroll_posts.get().is_none() {
-        //                 csr_paginator.set(p.next_page.clone());
-        //             }
-        //             view! {
-        //               <div class="flex flex-col ">
-        //                 <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
+      // {move || {
+      // ssr_posts
+      // .get()
+      // .unwrap_or(None)
+      // .map(|p| {
+      // if csr_infinite_scroll_posts.get().is_none() {
+      // csr_paginator.set(p.next_page.clone());
+      // }
+      // view! {
+      // <div class="flex flex-col ">
+      // <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
 
-        //                   <PostListings posts=p.posts.into()/>
-        //                   <PostListings posts=csr_infinite_scroll_posts
-        //                       .get()
-        //                       .unwrap_or_default()
-        //                       .into()/>
-        //                 </div>
-        //                 <div class=" hidden sm:block">
+      // <PostListings posts=p.posts.into()/>
+      // <PostListings posts=csr_infinite_scroll_posts
+      // .get()
+      // .unwrap_or_default()
+      // .into()/>
+      // </div>
+      // <div class=" hidden sm:block">
 
-        //                   {if let Some(s) = ssr_prev() {
-        //                       if !s.is_empty() {
-        //                           let mut st = s.split(',').collect::<Vec<_>>();
-        //                           let p = st.pop().unwrap_or("");
-        //                           let mut query_params = query.get();
-        //                           query_params.insert("prev".into(), st.join(",").to_string());
-        //                           query_params.insert("from".into(), p.into());
-        //                           view! {
-        //                             <span>
-        //                               <A
-        //                                 href=format!("{}", query_params.to_query_string())
-        //                                 class="btn"
-        //                               >
-        //                                 "Prev"
-        //                               </A>
-        //                             </span>
-        //                           }
-        //                       } else {
-        //                           view! { <span></span> }
-        //                       }
-        //                   } else {
-        //                       view! { <span></span> }
-        //                   }}
-        //                   {if let Some(n) = p.next_page.clone() {
-        //                       let s = ssr_prev().unwrap_or_default();
-        //                       let mut st = s.split(',').collect::<Vec<_>>();
-        //                       let f = if let Some(PaginationCursor(g)) = from_func() {
-        //                           g
-        //                       } else {
-        //                           "".to_string()
-        //                       };
-        //                       st.push(&f);
-        //                       let mut query_params = query.get();
-        //                       query_params.insert("prev".into(), st.join(",").to_string());
-        //                       query_params.insert("from".into(), n.0);
-        //                       view! {
-        //                         <span>
-        //                           <A href=format!("{}", query_params.to_query_string()) class="btn">
-        //                             "Next"
-        //                           </A>
-        //                         </span>
-        //                       }
-        //                   } else {
-        //                       view! { <span></span> }
-        //                   }}
+      // {if let Some(s) = ssr_prev() {
+      // if !s.is_empty() {
+      // let mut st = s.split(',').collect::<Vec<_>>();
+      // let p = st.pop().unwrap_or("");
+      // let mut query_params = query.get();
+      // query_params.insert("prev".into(), st.join(",").to_string());
+      // query_params.insert("from".into(), p.into());
+      // view! {
+      // <span>
+      // <A
+      // href=format!("{}", query_params.to_query_string())
+      // class="btn"
+      // >
+      // "Prev"
+      // </A>
+      // </span>
+      // }
+      // } else {
+      // view! { <span></span> }
+      // }
+      // } else {
+      // view! { <span></span> }
+      // }}
+      // {if let Some(n) = p.next_page.clone() {
+      // let s = ssr_prev().unwrap_or_default();
+      // let mut st = s.split(',').collect::<Vec<_>>();
+      // let f = if let Some(PaginationCursor(g)) = from_func() {
+      // g
+      // } else {
+      // "".to_string()
+      // };
+      // st.push(&f);
+      // let mut query_params = query.get();
+      // query_params.insert("prev".into(), st.join(",").to_string());
+      // query_params.insert("from".into(), n.0);
+      // view! {
+      // <span>
+      // <A href=format!("{}", query_params.to_query_string()) class="btn">
+      // "Next"
+      // </A>
+      // </span>
+      // }
+      // } else {
+      // view! { <span></span> }
+      // }}
 
-        //                 </div>
-        //               </div>
-        //             }
-        //         })
-        // }}
+      // </div>
+      // </div>
+      // }
+      // })
+      // }}
 
       </Transition>
 

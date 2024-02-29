@@ -1,19 +1,23 @@
-use crate::ui::components::{
-  comment::comment_nodes::CommentNodes,
-  post::post_listing::PostListing,
+use crate::{
+  queries::post_query::use_post,
+  ui::components::{comment::comment_nodes::CommentNodes, post::post_listing::PostListing},
 };
 use lemmy_client::{
   lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost},
   *,
 };
 use leptos::*;
+use leptos_query::QueryResult;
 use leptos_router::use_params_map;
 
 #[component]
 pub fn PostActivity() -> impl IntoView {
   let params = use_params_map();
 
-  let post_id = move || params.get().get("id").cloned().unwrap_or_default();
+  let post_id =
+    Signal::derive(move || with!(|params| params.get("id").map(Clone::clone).unwrap_or_default()));
+
+  let QueryResult { data, .. } = use_post().use_query(Default::default);
 
   let post = create_resource(post_id, move |id_string| async move {
     let id = id_string.parse::<i32>()?;
