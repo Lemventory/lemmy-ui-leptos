@@ -1,4 +1,3 @@
-use crate::utils::get_client_and_session::get_client_and_session;
 use lemmy_client::lemmy_api_common::community::{
   ListCommunities as ListCommunitiesBody,
   ListCommunitiesResponse,
@@ -11,6 +10,7 @@ use std::time::Duration;
 async fn list_communities(
   body: ListCommunitiesBody,
 ) -> Result<ListCommunitiesResponse, ServerFnError> {
+  use crate::utils::get_client_and_session::get_client_and_session;
   use lemmy_client::LemmyRequest;
 
   let (client, session) = get_client_and_session().await?;

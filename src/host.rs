@@ -33,7 +33,7 @@ pub fn get_https() -> String {
       if #[cfg(feature="ssr")] {
         std::env::var("HTTPS").unwrap_or_else(|_| format!("{HTTPS}"))
       } else {
-        option_env!("HTTPS").map_or_else(|_| format!("{HTTPS}"), Into::into)
+        option_env!("HTTPS").map_or_else(|| format!("{HTTPS}"), Into::into)
       }
   }
 }

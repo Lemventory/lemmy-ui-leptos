@@ -43,7 +43,7 @@ cfg_if! {
                 let routes = &routes;
 
                 App::new()
-                    .wrap(cookie_middleware)
+                    .wrap(cookie_middleware())
                     .service(Files::new("/pkg", format!("{site_root}/pkg")))
                     .service(Files::new("/assets", site_root))
                     .service(favicon)

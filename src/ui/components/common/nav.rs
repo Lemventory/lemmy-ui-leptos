@@ -5,10 +5,7 @@ use crate::{
     Icon,
     IconType::{Donate, Notifications, Search},
   },
-  utils::{
-    derive_query_signal::derive_query_signal,
-    get_client_and_session::get_client_and_session,
-  },
+  utils::derive_query_signal::derive_query_signal,
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
@@ -17,6 +14,7 @@ use leptos_router::*;
 
 #[server(LogoutAction, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
+  use crate::utils::get_client_and_session::get_client_and_session;
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get::<String>("jwt")?;

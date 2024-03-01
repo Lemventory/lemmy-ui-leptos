@@ -7,7 +7,7 @@ pub fn PostListings(#[prop(into)] posts: MaybeSignal<Vec<PostView>>) -> impl Int
   view! {
     <table class="table">
       <For each=move || posts.get() key=|pv| pv.post.id let:pv>
-        <PostListing post_view=pv.into()/>
+        <PostListing post_view=pv/>
       </For>
     </table>
   }
