@@ -355,7 +355,7 @@ pub fn HomeActivity() -> impl IntoView {
       <Transition fallback=|| {}>
         <div class="flex flex-col">
           <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
-            <PostListings posts=posts />
+            <PostListings posts=posts/>
           </div>
         </div>
       // {move || {

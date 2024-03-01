@@ -90,7 +90,7 @@ pub async fn report_post(
 }
 
 #[component]
-pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
+pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
   let post_view = Signal::derive(move || post_view.get());
   let id = Signal::derive(move || with!(|post_view| (*post_view).post.id.0));
   let is_upvote =
