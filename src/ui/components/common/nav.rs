@@ -8,7 +8,6 @@ use crate::{
     },
     unpack::Unpack,
   },
-  utils::derive_query_signal::derive_query_signal,
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
@@ -247,7 +246,7 @@ pub fn TopNav() -> impl IntoView {
                                     "None case for my_user should be handled by ancestor Show component",
                                 )
                                 .0
-                                .clone();
+                                .as_str();
                             format!("/u/{name}")
                         }>{t!(i18n, profile)}</A>
                       </li>
@@ -277,59 +276,68 @@ pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-  let QueryResult { data, .. } = use_site_state().use_query(|| ());
+  let QueryResult {
+    data: site_response,
+    ..
+  } = use_site_state().use_query(|| ());
 
-  let version = derive_query_signal(data, |data| data.version.clone());
+  let version = Signal::derive(move || {
+    with!(
+      |site_response| site_response.as_ref().map(|site_response| site_response
+        .as_ref()
+        .map_err(Clone::clone)
+        .map(|site_response| format!("BE: {}", site_response.version)))
+    )
+  });
 
   view! {
-    <nav class="container navbar mx-auto hidden sm:flex">
-      <div class="navbar-start w-auto"></div>
-      <div class="navbar-end grow w-auto">
-        <ul class="menu menu-horizontal flex-nowrap items-center">
-          <li>
-            <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
-              "FE: "
-              {FE_VERSION}
-            </a>
-          </li>
-          <li>
-            <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
-              {move || {
-                  with!(
-                      | version | format!("BE: {}", version.as_ref().map(Clone::clone)
-                      .unwrap_or_else(|| String::from("Lemmy")))
-                  )
-              }}
+    <Transition>
+      <nav class="container navbar mx-auto hidden sm:flex">
+        <div class="navbar-start w-auto"></div>
+        <div class="navbar-end grow w-auto">
+          <ul class="menu menu-horizontal flex-nowrap items-center">
+            <li>
+              <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
+                "FE: "
+                {FE_VERSION}
+              </a>
+            </li>
+            <li>
+              <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
+                <Unpack item=version let:version>
+                  {version}
+                </Unpack>
 
-            </a>
-          </li>
-          <li>
-            <A href="/modlog" class="text-md">
-              {t!(i18n, modlog)}
-            </A>
-          </li>
-          <li>
-            <A href="/instances" class="text-md">
-              {t!(i18n, instances)}
-            </A>
-          </li>
-          <li>
-            <a href="//join-lemmy.org/docs/en/index.html" class="text-md">
-              {t!(i18n, docs)}
-            </a>
-          </li>
-          <li>
-            <a href="//github.com/LemmyNet" class="text-md">
-              {t!(i18n, code)}
-            </a>
-          </li>
-          <li>
-            <a href="//join-lemmy.org" class="text-md">
-              "join-lemmy.org"
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+              </a>
+            </li>
+            <li>
+              <A href="/modlog" class="text-md">
+                {t!(i18n, modlog)}
+              </A>
+            </li>
+            <li>
+              <A href="/instances" class="text-md">
+                {t!(i18n, instances)}
+              </A>
+            </li>
+            <li>
+              <a href="//join-lemmy.org/docs/en/index.html" class="text-md">
+                {t!(i18n, docs)}
+              </a>
+            </li>
+            <li>
+              <a href="//github.com/LemmyNet" class="text-md">
+                {t!(i18n, code)}
+              </a>
+            </li>
+            <li>
+              <a href="//join-lemmy.org" class="text-md">
+                "join-lemmy.org"
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </Transition>
   }
 }

@@ -529,10 +529,11 @@ checksum = "c59e92b5a388f549b863a7bea62612c09f24c8393560709a54558a9abdfb3b9c"
 
 [[package]]
 name = "cc"
-version = "1.0.88"
+version = "1.0.89"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02f341c093d19155a6e41631ce5971aac4e9a868262212153124c15fa22d1cdc"
+checksum = "a0ba8f7aaa012f30d5b2861462f6708eccd49c3c39863fe083a308035f63d723"
 dependencies = [
+ "jobserver",
  "libc",
 ]
 
@@ -1463,6 +1464,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1a46d1a171d865aa5f83f92695765caa047a9b4cbae2cbf37dbd613a793fd4c"
 
 [[package]]
+name = "jobserver"
+version = "0.1.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ab46a6e9526ddef3ae7f787c06f0f2600639ba80ea3eade3d8e670a2230f51d6"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "js-sys"
 version = "0.3.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1486,7 +1496,7 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 [[package]]
 name = "lemmy-client"
 version = "0.19.4-alpha.1"
-source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#c9ca25ab9b0dafe66c0d4c2c273ed7086a5977a1"
+source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#e2b0bf5fcf46a6853e4edd19117036e83edb577b"
 dependencies = [
  "cfg-if",
  "gloo-net 0.5.0",
@@ -1528,7 +1538,7 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#7eec8714d71958ff682f9517275fcb108e7b4a3a"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1551,7 +1561,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#7eec8714d71958ff682f9517275fcb108e7b4a3a"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1570,8 +1580,9 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#7eec8714d71958ff682f9517275fcb108e7b4a3a"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
 dependencies = [
+ "chrono",
  "lemmy_db_schema",
  "serde",
  "serde_with",
@@ -1580,7 +1591,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#7eec8714d71958ff682f9517275fcb108e7b4a3a"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1593,7 +1604,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#7eec8714d71958ff682f9517275fcb108e7b4a3a"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1603,7 +1614,7 @@ dependencies = [
 [[package]]
 name = "lemmy_utils"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#7eec8714d71958ff682f9517275fcb108e7b4a3a"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
 dependencies = [
  "cfg-if",
  "rosetta-build",
@@ -2393,9 +2404,9 @@ dependencies = [
 
 [[package]]
 name = "regex-automata"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5bb987efffd3c6d0d8f5f89510bb458559eab11e4f869acb20bf845e016259cd"
+checksum = "86b83b8b9847f9bf95ef68afb0b8e6cdb80f498442f5179a29fad448fcc1eaea"
 dependencies = [
  "aho-corasick",
  "memchr",
