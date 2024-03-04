@@ -1,9 +1,12 @@
 use crate::{
   i18n::*,
   queries::site_state_query::use_site_state,
-  ui::components::common::icon::{
-    Icon,
-    IconType::{Donate, Notifications, Search},
+  ui::components::common::{
+    icon::{
+      Icon,
+      IconType::{Donate, Notifications, Search},
+    },
+    unpack::Unpack,
   },
   utils::derive_query_signal::derive_query_signal,
 };
@@ -55,24 +58,47 @@ pub async fn logout() -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult { data, refetch, .. } = use_site_state().use_query(|| ());
+  let QueryResult {
+    data: site_response,
+    refetch,
+    ..
+  } = use_site_state().use_query(|| ());
 
-  let user_name = derive_query_signal(data, |data| {
-    data
-      .my_user
-      .as_ref()
-      .map(|data| data.local_user_view.person.name.clone())
+  let user_is_logged_in = Signal::derive(move || {
+    with!(
+      |site_response| site_response.as_ref().map(|site_response| site_response
+        .as_ref()
+        .ok()
+        .map(|site_response| site_response.my_user.as_ref().is_some()))
+    )
+    .flatten()
+    .unwrap_or_default()
   });
 
-  let display_name = derive_query_signal(data, |data| {
-    data
-      .my_user
-      .as_ref()
-      .map(|data| data.local_user_view.person.display_name.clone())
-      .flatten()
+  let names = Signal::derive(move || {
+    with!(
+      |site_response| site_response.as_ref().map(|site_response| site_response
+        .as_ref()
+        .map_err(Clone::clone)
+        .map(
+          |site_response| site_response.my_user.as_ref().map(|my_user| (
+            my_user.local_user_view.person.name.clone(),
+            my_user.local_user_view.person.display_name.clone()
+          ))
+        ))
+    )
   });
 
-  let instance_name = derive_query_signal(data, |data| data.site_view.site.name.clone());
+  let instance_name = Signal::derive(move || {
+    with!(
+      |site_response| site_response.as_ref().map(|site_response| site_response
+        .as_ref()
+        .ok()
+        .map(|site_response| site_response.site_view.site.name.clone()))
+    )
+    .flatten()
+    .unwrap_or_default()
+  });
 
   let logout_action = create_server_action::<LogoutAction>();
 
@@ -152,25 +178,6 @@ pub fn TopNav() -> impl IntoView {
             </li>
             // <li class="z-[1]">
             // <details>
-            // <summary>"Lang"</summary>
-            // <ul>
-            // <li>
-            // <ActionForm action=lang_action on:submit=on_lang_submit(Locale::fr)>
-            // <input type="hidden" name="lang" value="FR"/>
-            // <button type="submit">"FR"</button>
-            // </ActionForm>
-            // </li>
-            // <li>
-            // <ActionForm action=lang_action on:submit=on_lang_submit(Locale::en)>
-            // <input type="hidden" name="lang" value="EN"/>
-            // <button type="submit">"EN"</button>
-            // </ActionForm>
-            // </li>
-            // </ul>
-            // </details>
-            // </li>
-            // <li class="z-[1]">
-            // <details>
             // <summary>"Theme"</summary>
             // <ul>
             // <li>
@@ -195,7 +202,7 @@ pub fn TopNav() -> impl IntoView {
             // </details>
             // </li>
             <Show
-              when=move || { with!(| user_name | user_name.as_ref().is_some_and(Option::is_some)) }
+              when=move || with!(| user_is_logged_in | { * user_is_logged_in })
 
               fallback=move || {
                   view! {
@@ -216,38 +223,47 @@ pub fn TopNav() -> impl IntoView {
                   </span>
                 </A>
               </li>
-              <li>
-                <details>
-                  <summary>
-                    {move || {
-                        with!(
-                            | user_name, display_name | display_name.as_ref().map(Clone::clone)
-                            .flatten().or_else(|| user_name.as_ref().map(Clone::clone).flatten())
-                        )
-                    }}
+              <Unpack item=names let:names>
+                <li>
+                  <details>
+                    <summary>
 
-                  </summary>
-                  <ul class="z-10">
-                    <li>
-                      <A href=move || {
-                          with!(
-                              | user_name | user_name.as_ref().map(Clone::clone).flatten().map(|
-                              user_name | format!("/u/{}", user_name)).unwrap_or_default()
-                          )
-                      }>{t!(i18n, profile)}</A>
-                    </li>
-                    <li>
-                      <A href="/settings">{t!(i18n, settings)}</A>
-                    </li>
-                    <div class="divider my-0"></div>
-                    <li>
-                      <ActionForm action=logout_action>
-                        <button type="submit">{t!(i18n, logout)}</button>
-                      </ActionForm>
-                    </li>
-                  </ul>
-                </details>
-              </li>
+                      {
+                          let (name, display_name) = names
+                              .as_ref()
+                              .expect(
+                                  "None case for my_user should be handled by ancestor Show component",
+                              );
+                          display_name.as_ref().unwrap_or(name)
+                      }
+
+                    </summary>
+                    <ul class="z-10">
+                      <li>
+                        <A href={
+                            let name = names
+                                .as_ref()
+                                .expect(
+                                    "None case for my_user should be handled by ancestor Show component",
+                                )
+                                .0
+                                .clone();
+                            format!("/u/{name}")
+                        }>{t!(i18n, profile)}</A>
+                      </li>
+                      <li>
+                        <A href="/settings">{t!(i18n, settings)}</A>
+                      </li>
+                      <div class="divider my-0"></div>
+                      <li>
+                        <ActionForm action=logout_action>
+                          <button type="submit">{t!(i18n, logout)}</button>
+                        </ActionForm>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              </Unpack>
             </Show>
           </ul>
         </div>

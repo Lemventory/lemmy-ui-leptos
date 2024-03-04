@@ -2,6 +2,7 @@ use crate::{
   i18n::*,
   queries::{posts_list_query::use_posts, site_state_query::use_site_state},
   ui::components::{
+    common::unpack::Unpack,
     home::{site_summary::SiteSummary, trending::Trending},
     post::post_listings::PostListings,
   },
@@ -30,15 +31,6 @@ pub fn HomeActivity() -> impl IntoView {
     data: list_posts_response,
     ..
   } = use_posts().use_query(Default::default);
-
-  let posts = Signal::derive(move || {
-    with!(|list_posts_response| list_posts_response
-      .as_ref()
-      .map(|list_posts_response| list_posts_response.as_ref().ok())
-      .flatten()
-      .map(|list_posts_response| list_posts_response.posts.clone())
-      .unwrap_or_default())
-  });
 
   let query = use_query_map();
 
@@ -355,7 +347,9 @@ pub fn HomeActivity() -> impl IntoView {
       <Transition fallback=|| {}>
         <div class="flex flex-col">
           <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
-            <PostListings posts=posts/>
+            <Unpack>
+           <PostListings posts=posts/
+           </Unpack>
           </div>
         </div>
       // {move || {
