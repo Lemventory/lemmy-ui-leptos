@@ -16,6 +16,7 @@ fn ListingTypeLink(
   children: Children,
 ) -> impl IntoView {
   let query = use_query_map();
+
   view! {
     <A
       href=move || {
@@ -79,7 +80,7 @@ fn derive_link_type<T: for<'a> Deserialize<'a> + Default>(
 
       query
         .get(key)
-        .map(|value| serde_json::from_str(value).ok())
+        .map(|value| serde_json::from_str(format!(r#""{value}""#).as_str()).ok())
         .flatten()
         .or_else(|| {
           site_response

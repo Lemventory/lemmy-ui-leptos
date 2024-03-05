@@ -29,17 +29,6 @@ pub async fn logout() -> Result<(), ServerFnError> {
   Ok(())
 }
 
-// #[server(ChangeLangFn, "/serverfn")]
-// pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
-//   let _ = set_cookie(
-//     "i18n_pref_locale",
-//     &lang.to_lowercase(),
-//     &core::time::Duration::from_secs(604800),
-//   )
-//   .await;
-//   Ok(())
-// }
-
 // #[server(ChangeThemeFn, "/serverfn")]
 // pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 //   // use leptos_actix::redirect;
@@ -120,15 +109,6 @@ pub fn TopNav() -> impl IntoView {
   //       },
   //     );
   //     ui_theme.set(Some(theme_name.to_string()));
-  //   }
-  // };
-
-  // let lang_action = create_server_action::<ChangeLangFn>();
-
-  // let on_lang_submit = move |lang: Locale| {
-  //   move |ev: SubmitEvent| {
-  //     ev.prevent_default();
-  //     i18n.set_locale(lang);
   //   }
   // };
 
