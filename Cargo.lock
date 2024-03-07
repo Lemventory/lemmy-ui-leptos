@@ -63,7 +63,7 @@ dependencies = [
  "flate2",
  "futures-core",
  "h2",
- "http 0.2.11",
+ "http 0.2.12",
  "httparse",
  "httpdate",
  "itoa",
@@ -98,7 +98,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d22475596539443685426b6bdadb926ad0ecaefdfc5fb05e5e3441f15463c511"
 dependencies = [
  "bytestring",
- "http 0.2.11",
+ "http 0.2.12",
  "regex",
  "serde",
  "tracing",
@@ -545,9 +545,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "chrono"
-version = "0.4.34"
+version = "0.4.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5bc015644b92d5890fab7489e49d21f879d5c990186827d42ec511919404f38b"
+checksum = "8eaf5903dcbc0a39312feb77df2ff4c76387d591b9fc7b04a238dcf8bb62639a"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
@@ -1124,7 +1124,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "gloo-utils 0.2.0",
- "http 0.2.11",
+ "http 0.2.12",
  "js-sys",
  "pin-project",
  "serde",
@@ -1184,7 +1184,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "futures-util",
- "http 0.2.11",
+ "http 0.2.12",
  "indexmap 2.2.5",
  "slab",
  "tokio",
@@ -1265,9 +1265,9 @@ dependencies = [
 
 [[package]]
 name = "http"
-version = "0.2.11"
+version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8947b1a6fad4393052c7ba1f4cd97bed3e953a95c79c92ad9b051a04611d9fbb"
+checksum = "601cbb57e577e2f5ef5be8e7b83f0f63994f25aa94d673e54a92d5c516d101f1"
 dependencies = [
  "bytes",
  "fnv",
@@ -1276,9 +1276,9 @@ dependencies = [
 
 [[package]]
 name = "http"
-version = "1.0.0"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b32afd38673a8016f7c9ae69e5af41a58f81b1d31689040f2f1959594ce194ea"
+checksum = "21b9ddb458710bc376481b842f5da65cdf31522de232c1ca8146abce2a358258"
 dependencies = [
  "bytes",
  "fnv",
@@ -1292,7 +1292,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ceab25649e9960c0311ea418d17bee82c0dcec1bd053b5f9a66e265a693bed2"
 dependencies = [
  "bytes",
- "http 0.2.11",
+ "http 0.2.12",
  "pin-project-lite",
 ]
 
@@ -1325,7 +1325,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "h2",
- "http 0.2.11",
+ "http 0.2.12",
  "http-body",
  "httparse",
  "httpdate",
@@ -1474,9 +1474,9 @@ dependencies = [
 
 [[package]]
 name = "js-sys"
-version = "0.3.66"
+version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cee9c64da59eae3b50095c18d3e74f8b73c0b86d2792824ff01bbce68ba229ca"
+checksum = "29c15563dc2726973df627357ce0c9ddddbea194836909d655df6a75d2cf296d"
 dependencies = [
  "wasm-bindgen",
 ]
@@ -1496,11 +1496,11 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 [[package]]
 name = "lemmy-client"
 version = "0.19.4-alpha.1"
-source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#e2b0bf5fcf46a6853e4edd19117036e83edb577b"
+source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#c7e98831c8dc66080af747847d6f6af2131e2190"
 dependencies = [
  "cfg-if",
  "gloo-net 0.5.0",
- "http 1.0.0",
+ "http 1.1.0",
  "lemmy_api_common",
  "leptos",
  "reqwest",
@@ -1538,10 +1538,8 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#fed6b61eaf1a6baea1af9dd64126d1039ba11541"
 dependencies = [
- "anyhow",
- "async-trait",
  "chrono",
  "enum-map",
  "getrandom",
@@ -1553,7 +1551,6 @@ dependencies = [
  "regex",
  "serde",
  "serde_with",
- "task-local-extensions",
  "url",
  "urlencoding",
 ]
@@ -1561,7 +1558,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#fed6b61eaf1a6baea1af9dd64126d1039ba11541"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1580,7 +1577,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#fed6b61eaf1a6baea1af9dd64126d1039ba11541"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1591,7 +1588,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#fed6b61eaf1a6baea1af9dd64126d1039ba11541"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1604,7 +1601,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#fed6b61eaf1a6baea1af9dd64126d1039ba11541"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1614,7 +1611,7 @@ dependencies = [
 [[package]]
 name = "lemmy_utils"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#eb1245bcebb7fcc6806b9214bdb4011d816f1316"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#fed6b61eaf1a6baea1af9dd64126d1039ba11541"
 dependencies = [
  "cfg-if",
  "rosetta-build",
@@ -2193,18 +2190,18 @@ checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
 
 [[package]]
 name = "pin-project"
-version = "1.1.4"
+version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0302c4a0442c456bd56f841aee5c3bfd17967563f6fadc9ceb9f9c23cf3807e0"
+checksum = "b6bf43b791c5b9e34c3d182969b4abb522f9343702850a2e57f460d00d09b4b3"
 dependencies = [
  "pin-project-internal",
 ]
 
 [[package]]
 name = "pin-project-internal"
-version = "1.1.4"
+version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "266c042b60c9c76b8d53061e52b2e0d1116abc57cefc8c5cd671619a56ac3690"
+checksum = "2f38a4412a78282e09a2cf38d195ea5420d15ba0602cb375210efbc877243965"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2431,7 +2428,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "h2",
- "http 0.2.11",
+ "http 0.2.12",
  "http-body",
  "hyper",
  "hyper-tls",
@@ -2736,7 +2733,7 @@ dependencies = [
  "dashmap",
  "futures",
  "gloo-net 0.5.0",
- "http 1.0.0",
+ "http 1.1.0",
  "inventory",
  "js-sys",
  "once_cell",
@@ -2934,15 +2931,6 @@ checksum = "a75fb188eb626b924683e3b95e3a48e63551fcfb51949de2f06a9d91dbee93c9"
 dependencies = [
  "core-foundation-sys",
  "libc",
-]
-
-[[package]]
-name = "task-local-extensions"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba323866e5d033818e3240feeb9f7db2c4296674e4d9e16b97b7bf8f490434e8"
-dependencies = [
- "pin-utils",
 ]
 
 [[package]]
@@ -3317,9 +3305,9 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.89"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ed0d4f68a3015cc185aff4db9506a015f4b96f95303897bfa23f846db54064e"
+checksum = "4be2531df63900aeb2bca0daaaddec08491ee64ceecbee5076636a3b026795a8"
 dependencies = [
  "cfg-if",
  "wasm-bindgen-macro",
@@ -3327,9 +3315,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-backend"
-version = "0.2.89"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b56f625e64f3a1084ded111c4d5f477df9f8c92df113852fa5a374dbda78826"
+checksum = "614d787b966d3989fa7bb98a654e369c762374fd3213d212cfc0251257e747da"
 dependencies = [
  "bumpalo",
  "log",
@@ -3342,9 +3330,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-futures"
-version = "0.4.39"
+version = "0.4.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac36a15a220124ac510204aec1c3e5db8a22ab06fd6706d881dc6149f8ed9a12"
+checksum = "76bc14366121efc8dbb487ab05bcc9d346b3b5ec0eaa76e46594cabbe51762c0"
 dependencies = [
  "cfg-if",
  "js-sys",
@@ -3354,9 +3342,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.89"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0162dbf37223cd2afce98f3d0785506dcb8d266223983e4b5b525859e6e182b2"
+checksum = "a1f8823de937b71b9460c0c34e25f3da88250760bec0ebac694b49997550d726"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -3364,9 +3352,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.89"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0eb82fcb7930ae6219a7ecfd55b217f5f0893484b7a13022ebb2b2bf20b5283"
+checksum = "e94f17b526d0a461a191c78ea52bbce64071ed5c04c9ffe424dcb38f74171bb7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3377,9 +3365,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.89"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ab9b36309365056cd639da3134bf87fa8f3d86008abf99e612384a6eecd459f"
+checksum = "af190c94f2773fdb3729c55b007a722abb5384da03bc0986df4c289bf5567e96"
 
 [[package]]
 name = "wasm-streams"
@@ -3396,9 +3384,9 @@ dependencies = [
 
 [[package]]
 name = "web-sys"
-version = "0.3.66"
+version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "50c24a44ec86bb68fbecd1b3efed7e85ea5621b39b35ef2766b66cd984f8010f"
+checksum = "77afa9a11836342370f4817622a2f0f418b134426d91a82dfb48f532d2ec13ef"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
@@ -3603,9 +3591,9 @@ checksum = "927da81e25be1e1a2901d59b81b37dd2efd1fc9c9345a55007f09bf5a2d3ee03"
 
 [[package]]
 name = "yansi"
-version = "1.0.0-rc.1"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1367295b8f788d371ce2dbc842c7b709c73ee1364d30351dd300ec2203b12377"
+checksum = "6c2861d76f58ec8fc95708b9b1e417f7b12fd72ad33c01fa6886707092dea0d3"
 
 [[package]]
 name = "zerocopy"

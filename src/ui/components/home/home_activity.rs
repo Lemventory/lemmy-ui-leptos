@@ -28,24 +28,24 @@ pub fn HomeActivity() -> impl IntoView {
   // } = use_posts().use_query(Default::default);
 
   view! {
-    <FilterBar />
-    <main
-      role="main"
-      class="w-full flex flex-col sm:flex-row flex-grow"
-    >// // <Transition fallback=|| {}>
-    // //   <div class="flex flex-col">
-    // //     <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
-    // //       <Unpack item=posts let:posts>
-    // //      <PostListings posts=posts/
-    // //      </Unpack>
-    // //     </div>
-    // //   </div>
-    // // </Transition>
+    <FilterBar/>
+    <main role="main" class="w-full flex flex-col sm:flex-row flex-grow">
+      // // <Transition fallback=|| {}>
+      // //   <div class="flex flex-col">
+      // //     <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
+      // //       <Unpack item=posts let:posts>
+      // //      <PostListings posts=posts/
+      // //      </Unpack>
+      // //     </div>
+      // //   </div>
+      // // </Transition>
 
-    // <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 hidden lg:block">
-    // <Trending/>
-    // <SiteSummary/>
-    // </div>
+      <Suspense fallback=move || "Loading...">
+        <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 hidden lg:block">
+          // <Trending/>
+          // <SiteSummary/>
+        </div>
+      </Suspense>
     </main>
   }
 }
